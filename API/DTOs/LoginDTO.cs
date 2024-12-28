@@ -4,7 +4,7 @@ namespace API;
 
 public class LoginDTO
 {   [Required]
-    public string username { get; set; }
+    public required string username { get; set; }
     [Required]
-    public string password { get; set; }
+    public required string password { get; set; }
 }
