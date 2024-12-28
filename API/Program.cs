@@ -23,11 +23,23 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(x=>x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200","https://localhost:4200"));
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
+using var scope = app.Services.CreateScope();
+var service = scope.ServiceProvider;
+try
+{
+    var context = service.GetRequiredService<DataContext>();
+    await context.Database.MigrateAsync();
+    await Seed.SeedUsers(context);
+}
+catch (Exception ex)
+{
+    
+    var looger = service.GetRequiredService<ILogger<Program>>();
+    looger.LogError(ex,"error from me");
+}
 app.Run();
